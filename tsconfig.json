@@ -4,6 +4,7 @@
     "strict": true,
     "baseUrl": ".",
     "moduleResolution": "Node",
+    "resolveJsonModule": true,
     "skipLibCheck": true,
     "declaration": true
   },
