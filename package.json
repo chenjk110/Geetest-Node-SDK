@@ -1,0 +1,26 @@
+{
+  "name": "geetest-node-sdk",
+  "version": "0.0.0",
+  "description": "Geetest SDK for node.js",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chenjk110/Geetest-Node-SDK.git"
+  },
+  "keywords": [
+    "Geetest",
+    "gt",
+    "node",
+    "SDK"
+  ],
+  "author": "TanKingKhun",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chenjk110/Geetest-Node-SDK/issues"
+  },
+  "homepage": "https://github.com/chenjk110/Geetest-Node-SDK#readme"
+}
