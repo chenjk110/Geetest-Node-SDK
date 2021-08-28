@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "ES2015",
+    "strict": true,
+    "baseUrl": ".",
+    "moduleResolution": "Node",
+    "skipLibCheck": true,
+    "declaration": true
+  },
+  "include": ["./src"]
+}
