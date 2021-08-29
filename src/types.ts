@@ -8,21 +8,26 @@ export interface IGeetestConfig {
 }
 
 export interface IResRegister {
+  success: 0 | 1
   /** 
    * 流水号，一次完整验证流程的唯一标识
    * 
    * Serial number, the unique identification of a complete verification process
    */
   challenge: string
+
+  gt: string
 }
 
 export interface IResValidate {
+  success: 0 | 1
   /** 
    * 核心校验数据
    * 
    * Key verification data
    */
   seccode:string
+  
 }
 
 interface IBaseReqParams extends Record<any, any>  {
@@ -142,4 +147,6 @@ export interface IReqParamsValidate extends IBaseReqParams {
    * Account ID applied to polar inspection
    */
   captchaid: string
+
+  validate: string
 }

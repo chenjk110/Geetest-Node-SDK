@@ -1,7 +1,7 @@
 import { IGeetestConfig, IReqParamsRegister, IReqParamsValidate, IResRegister, IResValidate } from './types'
 import { URL } from 'url'
 import { version } from '../package.json'
-import { GET, POST } from './utils'
+import { createHashMD5, decodeResponse, GET, makeChallenge, POST, validateFailImage } from './utils'
 
 const SDK_VER = `Node_${version}`
 export class Geetest {
@@ -47,37 +47,85 @@ export class Geetest {
       challenge: '',
       seccode: '',
       captchaid: '',
+      validate: '',
       sdk: SDK_VER,
     }
   }
   
-  private isJsonFormat(params: IReqParamsRegister | IReqParamsValidate) {
+  private isJsonFormat(params: Pick<IReqParamsRegister | IReqParamsValidate, 'json_format'>) {
     return !!params.json_format
   }
 
   async register(params?: IReqParamsRegister): Promise<IResRegister> {
-    const { defaultRegisterParams, registerApiUri, isJsonFormat } = this
+    const { defaultRegisterParams, registerApiUri, isJsonFormat, geetestId, geetestKey } = this
 
     // normalize params
     params = Object.assign(defaultRegisterParams, params)
 
-    const res = await GET(`${registerApiUri}?${new URLSearchParams(params)}`)
+    try {
+      const res = await GET(`${registerApiUri}?${new URLSearchParams(params)}`)
 
-    return isJsonFormat(params)
-      ? res.json()
-      : { challenge: await res.text() }
+      const challenge: string = isJsonFormat(params) ? (await res.json()).challenge : await res.text()
+
+      if (challenge.length !== 32) {
+        throw new Error()
+      }
+
+      return {
+        success: 1,
+        challenge: createHashMD5(challenge + geetestKey),
+        gt: geetestId
+      }
+
+    } catch (err) {
+      return {
+        success: 0,
+        challenge: makeChallenge(),
+        gt: geetestId
+      }
+    }
   }
   
-  async validate(params: IReqParamsValidate): Promise<IResValidate> {
-    const { defaultValidateParams, validateApiUri, isJsonFormat } = this
-    
-    // normalize params
-    params = Object.assign(defaultValidateParams, params)
+  async validate(params: Omit<IReqParamsValidate, 'captchaid'>): Promise<boolean> {
 
-    const res = await POST(`${validateApiUri}?${new URLSearchParams(params)}`)
+    const { geetestKey, validateApiUri, defaultValidateParams, isJsonFormat  } = this
+
+    const { challenge, validate, seccode } = params
+
+    const validatePairs = validate.split('_')
+
+    if (validatePairs.length === 3) {
+
+        let [encodedAns, encodedFbii, encodedIgi] = validatePairs
+
+        const decodedAns = decodeResponse(challenge, encodedAns)
+        const decodedFbii = decodeResponse(challenge, encodedFbii)
+        const decodedIgi = decodeResponse(challenge, encodedIgi)
+
+        const validateResult = validateFailImage(decodedAns, decodedFbii, decodedIgi)
+
+        return  validateResult === 1
+
+    }
+
+    if (validate === createHashMD5(`${geetestKey}geetest${challenge}`)) {
+
+      try {
+        // normalize params
+        params = Object.assign(defaultValidateParams, params)
     
-    return isJsonFormat(params)
-      ? res.json()
-      : { seccode: await res.text() }
+        const res = await POST(`${validateApiUri}?${new URLSearchParams(params)}`)
+  
+        const seccodeRes: string = isJsonFormat(params) ? (await res.json()).seccode :  await res.text()
+  
+        return seccodeRes === createHashMD5(seccode)
+        
+      } catch {
+        return false
+      }
+
+    }
+
+    return false
   }
 }
