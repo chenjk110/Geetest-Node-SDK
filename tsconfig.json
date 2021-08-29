@@ -3,6 +3,8 @@
     "target": "ES2015",
     "strict": true,
     "baseUrl": ".",
+    "outDir": "dist",
+    "module": "CommonJS",
     "moduleResolution": "Node",
     "resolveJsonModule": true,
     "skipLibCheck": true,

@@ -20,13 +20,12 @@ export interface IResRegister {
 }
 
 export interface IResValidate {
-  success: 0 | 1
   /** 
    * 核心校验数据
    * 
    * Key verification data
    */
-  seccode:string
+  seccode: string
   
 }
 
@@ -140,13 +139,12 @@ export interface IReqParamsValidate extends IBaseReqParams {
    */
   challenge:	string
 
+  validate: string
   /**
    * 
    * 向极验申请的账号id
    * 
    * Account ID applied to polar inspection
    */
-  captchaid: string
-
-  validate: string
+  captchaid?: string
 }

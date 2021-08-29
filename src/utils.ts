@@ -59,7 +59,7 @@ export const validateFailImage = function (answer: number, fullBgIndex: number, 
   }
 }
 
-export const decodeResponse = function (challenge: string, userResponse: any[]) {
+export const decodeResponse = function (challenge: string, userResponse: string) {
   if (userResponse.length > 100) {
       return 0
   }
